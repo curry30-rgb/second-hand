@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.second.hand.trading.server.dao.AdvDao">
+
+    <resultMap id="BaseResultMap" type="AdvModel">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="path" jdbcType="VARCHAR" property="path" />
+        <result column="author" jdbcType="VARCHAR" property="author" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, path, author,status
+    </sql>
+
+    <select id="getAdvPathByStatus" resultMap="BaseResultMap">
+        SELECT path
+        FROM sh_adv WHERE status =1
+    </select>
+
+    <select id="getAdvByStatus" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM sh_adv
+        where status = #{status} order by id desc limit #{begin}, #{nums}
+    </select>
+
+    <select id="countAdvByStatus" resultType="int">
+        select COUNT(*) from sh_adv
+        where status = #{status}
+    </select>
+
+    <insert id="addAdv" keyColumn="id" keyProperty="id" parameterType="advModel" useGeneratedKeys="true">
+        INSERT INTO sh_adv(path,author)
+        values (#{path,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="advModel">
+        update sh_adv
+        <set>
+            <if test="path != null">
+                path = #{path,jdbcType=VARCHAR},
+            </if>
+            <if test="author != null">
+                author = #{author,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+</mapper>
